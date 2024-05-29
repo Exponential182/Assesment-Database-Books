@@ -78,6 +78,59 @@ def book_names_and_authors_and_genres():
     print("-----------------------------------------------------------------------------------------")
     print("| Book Title                                        | Author Name         | Genre       |")
     db.close()
+def book_names_and_authors_and_release_date():
+    '''Function to display all the books, their authors, and their release date'''
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    #Execute and Fetch Data
+    query = "SELECT book.name, author.name, book.release_date FROM book JOIN author ON author.id = book.author ORDER BY book.release_date ASC"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    #Print out the Results
+    print("| Book Title                                        | Author Name         | Release Date   |")
+    print("-------------------------------------------------------------------------------------------")
+    for data in results:
+        print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<14}|")
+    print("-------------------------------------------------------------------------------------------")
+    print("| Book Title                                        | Author Name         | Release Date   |")
+    db.close()
+def book_names_and_author_and_my_enjoyment_and_general_reviews():
+    '''Function to display all the books, their authors, my enjoyment, and their general review average'''
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    #Execute and Fetch Data
+    query = "SELECT book.name, author.name, book.enjoyment, book.review FROM book JOIN author ON author.id = book.author ORDER BY book.name ASC"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    #Print out the Results
+    print("Note: Enjoyment and Reviews are on a scale from 1 to 5.")
+    print("| Book Title                                        | Author Name         | Enjoyment | Reviews |")
+    print("-------------------------------------------------------------------------------------------------")
+    for data in results:
+        print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<10}| {data[3]:<8}|")
+    print("-------------------------------------------------------------------------------------------------")
+    print("| Book Title                                        | Author Name         | Enjoyment | Reviews |")
+    db.close()
+def book_names_and_isbn_13_classification_and_release_date():
+    '''Function to display all the books, their isbn-13 classification, and their release date'''
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    #Execute and Fetch Data
+    query = "SELECT book.name, book.isbn, book.release_date FROM book ORDER BY book.release_date ASC"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    #Print out the Results
+    print("Note: Enjoyment and Reviews are on a scale from 1 to 5.")
+    print("| Book Title                                        | ISBN          | Release Date |")
+    print("------------------------------------------------------------------------------------")
+    for data in results:
+        print(f"| {data[0]:<50}| {data[1]:<14}| {data[2]:<13}|")
+    print("------------------------------------------------------------------------------------")
+    print("| Book Title                                        | ISBN          | Release Date |")
+    db.close()
 
 #Establish Array of Functions
 function_array = {
@@ -85,6 +138,10 @@ function_array = {
     "2": book_names_and_author_and_wordcount_greater_than_150000,
     "3": book_names_and_page_count_and_author_and_genre_pages_less_than_333,
     "4": book_names_and_authors_and_genres,
+    "5": book_names_and_authors_and_release_date,
+    "6": book_names_and_author_and_my_enjoyment_and_general_reviews,
+    "7": book_names_and_isbn_13_classification_and_release_date,
+    "": quit,
 }
 
 
@@ -93,12 +150,17 @@ function_array = {
 if __name__ == "__main__":
     #Loop to Provide 
     while True:
+        print('---------------------------------------------------------------------------------------')
+        print('Press Enter without providing and input to close the program')
         print('\n')
         print('1. Print all the book titles and authors')
-        print('2. Print all the book titles, word counts, and authors where there are more than 150,000 words')
-        print('3. Print all the book titles, page counts, authors, and genre of books with less than 333 pages.')
+        print('2. Print the book titles, word counts, and authors where there are more than 150,000 words')
+        print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages.')
         print('4. Print all the book titles, authors, and genres.')
-        user_input = input("Input the number associated with the function you wish to execute. \n")
+        print('5. Print all the book titles, authors, and release dates')
+        print('6. Print all the book titles, authors, my enjoyment, and the general reviews')
+        print('7. Print all the book titles, isbn-13 numbers, and release dates')
+        user_input = input('Input the number associated with the function you wish to execute. \n')
         print("\n")
         if user_input in function_array.keys():
             function_array[user_input]()
