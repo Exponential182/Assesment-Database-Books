@@ -141,17 +141,16 @@ function_array = {
     "5": book_names_and_authors_and_release_date,
     "6": book_names_and_author_and_my_enjoyment_and_general_reviews,
     "7": book_names_and_isbn_13_classification_and_release_date,
-    "": quit,
+    "quit": quit,
 }
 
 
 
 #Major Code Loop
 if __name__ == "__main__":
-    #Loop to Provide 
+    #Loop to Provide ADD TO THIS NOW 
     while True:
-        print('---------------------------------------------------------------------------------------')
-        print('Press Enter without providing and input to close the program')
+        print('Use the string quit without providing an input to close the program')
         print('\n')
         print('1. Print all the book titles and authors')
         print('2. Print the book titles, word counts, and authors where there are more than 150,000 words')
@@ -164,7 +163,7 @@ if __name__ == "__main__":
         print("\n")
         if user_input in function_array.keys():
             function_array[user_input]()
-            time.sleep(5)
+            time.sleep(2)
         else:
             print("Invalid input, please enter the number before a function without any trailing spaces or symbols!")
             continue
