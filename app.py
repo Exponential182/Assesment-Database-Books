@@ -174,11 +174,25 @@ def add_data_to_a_table():
     cursor = db.cursor()
     #Execute and Fetch Data
     tables = ['book', 'author', 'genre']
-    print("Enter")
+    names = []
+    type = []
+    print("Enter a Number Correlating to the table you want to edit")
+    print("1. Books \n2. Authors \n3. Genres")
+    table_id = 0
+    while table_id == 0:
+        try:
+            table_id = int(input(""))
+        except ValueError:
+            print("Please Enter a Valid input.")
     query = f"PRAGMA table_info({tables[table_id-1]})"
     cursor.execute(query)
-    column_data = cursor.fetchall()
-    print(column_data)
+    table_data = cursor.fetchall()
+    for column_data in table_data:
+        names.append(column_data[1])
+        type.append(column_data[2])
+    print(table_data)
+    print(names)
+    print(type)
 
 
 
@@ -213,12 +227,16 @@ if __name__ == "__main__":
         print('6. Print all the book titles, authors, my enjoyment, and the general reviews')
         print('7. Print all the book titles, isbn-13 numbers, and release dates')
         print('8. Search for all the books released in a year')
+        print('9. Add data to a table')
+        #Gets the user input correlating to a function
         user_input = input('Input the number associated with the function you wish to execute. \n')
         print("\n")
+        #Lookup and execute the correct function based on a function dictionary
         if user_input in function_array.keys():
             function_array[user_input.lower()]()
             time.sleep(2)
         else:
+            #Return an error message if the function is not correlated to a function
             print("Invalid input, please enter the number before a function without any trailing spaces or symbols!")
             continue
 
