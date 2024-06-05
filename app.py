@@ -172,19 +172,51 @@ def add_data_to_genre_table():
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
-    #Gather, Format, and Sanatise Input
-    sanatiser = []
-    sanatiser.append(input("Insert a Genre to add to the a Genre Table \n").capitalize())
-    #Establish Id for Entry
+    #Show the existing genres and establish the target id for
     query1 = "SELECT * FROM genre;"
     cursor.execute(query1)
     genre_table = cursor.fetchall()
+    print("| ID  | Genre          |")
+    print("------------------------")
+    for genre in genre_table:
+        print(f"| {genre[0]:<4}| {genre[1]:<15}|")
+    print("------------------------")
+    print("| ID  | Genre          |")
     target_id = genre_table[-1][0] + 1
+    #Gather, Format, and Sanatise Input
+    sanatiser = []
+    sanatiser.append(input("Insert a Genre to add to the a Genre Table \n").title())
     #Enter Data
     query2 = f"INSERT INTO genre (id, genre) VALUES ({target_id}, '{sanatiser[0]}')"
     cursor.execute(query2)
     #Finalise Insertion
     db.commit()
+    print("Sucessfully added to the database!")
+    db.close()
+def add_data_to_author_table():
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    #Show the existing author and establish the target id for
+    query1 = "SELECT * FROM author;"
+    cursor.execute(query1)
+    author_table = cursor.fetchall()
+    print("| ID  | Author Name                                       |")
+    print("-----------------------------------------------------------")
+    for author in author_table:
+        print(f"| {author[0]:<4}| {author[1]:<50}|")
+    print("-----------------------------------------------------------")
+    print("| ID  | Author Name                                       |")
+    target_id = author_table[-1][0] + 1
+    #Gather, Format, and Sanatise Input
+    sanatiser = []
+    sanatiser.append(input("Insert an Author to add to the a Author Table \n").title())
+    #Enter Data
+    query2 = f"INSERT INTO author (id, name) VALUES ({target_id}, '{sanatiser[0]}')"
+    cursor.execute(query2)
+    #Finalise Insertion
+    db.commit()
+    print("Sucessfully added to the database!")
     db.close()
 
 
@@ -202,6 +234,7 @@ function_array = {
     "7": book_names_and_isbn_13_classification_and_release_date,
     "8": search_for_books_released_in_a_year,
     "9": add_data_to_genre_table,
+    '10': add_data_to_author_table,
     "quit": quit,
 }
 
@@ -222,6 +255,7 @@ if __name__ == "__main__":
         print('7. Print all the book titles, isbn-13 numbers, and release dates')
         print('8. Search for all the books released in a year')
         print('9. Add data to the genre table')
+        print('10. Add data to the author table')
         #Gets the user input correlating to a function
         user_input = input('Input the number associated with the function you wish to execute. \n')
         #Lookup and execute the correct function based on a function dictionary
