@@ -168,31 +168,25 @@ def search_for_books_released_in_a_year():
     else:
         print("It appears there was no data for that year!")
     db.close()
-def add_data_to_a_table():
+def add_data_to_genre_table():
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
-    #Execute and Fetch Data
-    tables = ['book', 'author', 'genre']
-    names = []
-    type = []
-    print("Enter a Number Correlating to the table you want to edit")
-    print("1. Books \n2. Authors \n3. Genres")
-    table_id = 0
-    while table_id == 0:
-        try:
-            table_id = int(input(""))
-        except ValueError:
-            print("Please Enter a Valid input.")
-    query = f"PRAGMA table_info({tables[table_id-1]})"
-    cursor.execute(query)
-    table_data = cursor.fetchall()
-    for column_data in table_data:
-        names.append(column_data[1])
-        type.append(column_data[2])
-    print(table_data)
-    print(names)
-    print(type)
+    #Gather, Format, and Sanatise Input
+    sanatiser = []
+    sanatiser.append(input("Insert a Genre to add to the a Genre Table \n").capitalize())
+    #Establish Id for Entry
+    query1 = "SELECT * FROM genre;"
+    cursor.execute(query1)
+    genre_table = cursor.fetchall()
+    target_id = genre_table[-1][0] + 1
+    #Enter Data
+    query2 = f"INSERT INTO genre (id, genre) VALUES ({target_id}, '{sanatiser[0]}')"
+    cursor.execute(query2)
+    #Finalise Insertion
+    db.commit()
+    db.close()
+
 
 
 
@@ -207,7 +201,7 @@ function_array = {
     "6": book_names_and_author_and_my_enjoyment_and_general_reviews,
     "7": book_names_and_isbn_13_classification_and_release_date,
     "8": search_for_books_released_in_a_year,
-    "9": add_data_to_a_table,
+    "9": add_data_to_genre_table,
     "quit": quit,
 }
 
@@ -227,10 +221,9 @@ if __name__ == "__main__":
         print('6. Print all the book titles, authors, my enjoyment, and the general reviews')
         print('7. Print all the book titles, isbn-13 numbers, and release dates')
         print('8. Search for all the books released in a year')
-        print('9. Add data to a table')
+        print('9. Add data to the genre table')
         #Gets the user input correlating to a function
         user_input = input('Input the number associated with the function you wish to execute. \n')
-        print("\n")
         #Lookup and execute the correct function based on a function dictionary
         if user_input in function_array.keys():
             function_array[user_input.lower()]()
