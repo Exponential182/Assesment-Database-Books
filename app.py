@@ -169,6 +169,7 @@ def search_for_books_released_in_a_year():
         print("It appears there was no data for that year!")
     db.close()
 def add_data_to_genre_table():
+    """Function to Insert a Genre Into the Genre Table"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -194,6 +195,7 @@ def add_data_to_genre_table():
     print("Sucessfully added to the database!")
     db.close()
 def add_data_to_author_table():
+    """Function to Insert an Author into the Author Table"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -218,6 +220,66 @@ def add_data_to_author_table():
     db.commit()
     print("Sucessfully added to the database!")
     db.close()
+def add_data_to_book_table():
+    """Function to Insert a Book and all its Correlating Information to the Book table"""
+    #Establish Interface and Storage
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    data = []
+    polarity = ["Y", "N"]
+    #Gather Id Information
+    id_query = "SELECT id FROM book"
+    cursor.execute(id_query)
+    id_deterimnant = cursor.fetchall()
+    target_id = id_deterimnant[-1][0] + 1
+    #Book Title
+    gatherer = input("Please insert the title of the book you would like to enter!\n")
+    data.append(gatherer)
+    """Subset Function to Gather Author"""
+    #Establish and Show Author Table for Refrence
+    query1 = "SELECT * FROM author;"
+    cursor.execute(query1)
+    author_table = cursor.fetchall()
+    generated_author_id = author_table[-1][0] + 1
+    print("| ID  | Author Name                                       |")
+    print("-----------------------------------------------------------")
+    for author in author_table:
+        print(f"| {author[0]:<4}| {author[1]:<50}|")
+    print("-----------------------------------------------------------")
+    print("| ID  | Author Name                                       |")
+    while True:
+        #Loop to Gather Author Information
+        #Checks where the author information will come from, adding an author or refrencing and existing author
+        gatherer = input("Is the author you want to enter in the table above? (Y/N) ") 
+        if gatherer not in polarity:
+            #Checks if the Yes/No input is Valid
+            print("That input is invalid, please try again!")
+            continue
+        elif gatherer == "Y":
+            #If the input is Yes, Request the numerical id of the author and check that it is a valid range
+            try:
+                author_id = int(input("Please enter the numerical id if the author who wrote the book you are entering data for, this can be found in the above table! "))
+                if author_id <= generated_author_id and author > 0:
+                    data.append(author_id)
+                    break
+                else:
+                    #If value is outside the valid range, return an error and request info again
+                    print("That id is not in the Table")
+                    continue
+            except ValueError:
+                #If the input is not an integer, return an error and request info again
+                print("That is an invalid input.")
+                continue
+        elif gatherer == "N":
+            #Redirect the user to the function to add an author to the table and use the generated id
+            print("You will now be redirected to the method to add an author to the author table, this will automatically be selected. \n")
+            add_data_to_author_table()
+            data.append(generated_author_id)
+            break
+    
+
+
+    final_query = f"INSERT DATA into book (id, name, author, genre, pages, word_count, release_date, isbn, review) VALUES ({target_id}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]})"
 
 
 
@@ -234,7 +296,8 @@ function_array = {
     "7": book_names_and_isbn_13_classification_and_release_date,
     "8": search_for_books_released_in_a_year,
     "9": add_data_to_genre_table,
-    '10': add_data_to_author_table,
+    "10": add_data_to_author_table,
+    "11": add_data_to_book_table,
     "quit": quit,
 }
 
