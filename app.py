@@ -249,7 +249,7 @@ def add_data_to_book_table():
     print("| ID  | Author Name                                       |")
     while True:
         #Loop to Gather Author Information
-        #Checks where the author information will come from, adding an author or refrencing and existing author
+        #Checks where the author information will come from, adding an author or refrencing an existing author
         gatherer = input("Is the author you want to enter in the table above? (Y/N) ") 
         if gatherer not in polarity:
             #Checks if the Yes/No input is Valid
@@ -258,8 +258,8 @@ def add_data_to_book_table():
         elif gatherer == "Y":
             #If the input is Yes, Request the numerical id of the author and check that it is a valid range
             try:
-                author_id = int(input("Please enter the numerical id if the author who wrote the book you are entering data for, this can be found in the above table! "))
-                if author_id <= generated_author_id and author > 0:
+                author_id = int(input("Please enter the numerical id of the author who wrote the book you are entering data for, this can be found in the above table! "))
+                if author_id <= generated_author_id and author_id > 0:
                     data.append(author_id)
                     break
                 else:
@@ -268,7 +268,7 @@ def add_data_to_book_table():
                     continue
             except ValueError:
                 #If the input is not an integer, return an error and request info again
-                print("That is an invalid input.")
+                print("That is an invalid input")
                 continue
         elif gatherer == "N":
             #Redirect the user to the function to add an author to the table and use the generated id
@@ -276,10 +276,105 @@ def add_data_to_book_table():
             add_data_to_author_table()
             data.append(generated_author_id)
             break
+
+
+    """Subset Function to Gather Genre"""
+    #Establish and Show Genre Table for Refrence
+    query1 = "SELECT * FROM genre;"
+    cursor.execute(query1)
+    genre_table = cursor.fetchall()
+    generated_genre_id = genre_table[-1][0] + 1
+    print("| ID  | Genre          |")
+    print("------------------------")
+    for genre in genre_table:
+        print(f"| {genre[0]:<4}| {genre[1]:<15}|")
+    print("------------------------")
+    print("| ID  | Genre          |")
+    while True:
+        #Loop to Gather Genre Information
+        #Checks where the genre information will come from, adding an genre or refrencing an existing genre
+        gatherer = input("Is the genre you want to enter in the table above? (Y/N) ") 
+        if gatherer not in polarity:
+            #Checks if the Yes/No input is Valid
+            print("That input is invalid, please try again!")
+            continue
+        elif gatherer == "Y":
+            #If the input is Yes, Request the numerical id of the genre and check that it is a valid range
+            try:
+                genre_id = int(input("Please enter the numerical id of the genre of the book you are entering data for, this can be found in the above table! "))
+                if genre_id <= generated_genre_id and genre_id > 0:
+                    data.append(genre_id)
+                    break
+                else:
+                    #If value is outside the valid range, return an error and request info again
+                    print("That id is not in the Table")
+                    continue
+            except ValueError:
+                #If the input is not an integer, return an error and request info again
+                print("That is an invalid input")
+                continue
+        elif gatherer == "N":
+            #Redirect the user to the function to add an author to the table and use the generated id
+            print("You will now be redirected to the method to add an author to the genre table, this will automatically be selected. \n")
+            add_data_to_genre_table()
+            data.append(generated_genre_id)
+            break
     
 
+    #Page Count
+    while True:
+        try:
+            pages = int(input("Please enter the number of pages in the book! "))
+            #Check Data
+            if pages > 0:
+                data.append(pages)
+                break
+            else:
+                print("Please enter a positive whole number")
+                continue
+        except:
+            print("That is an invalid input, please enter a positive whole number")
+            continue
+    
+    #Word Count
+    while True:
+        try:
+            words = int(input("Please enter the number of words in the book! "))
+            #Check Data
+            if words > 0:
+                data.append(words)
+                break
+            else:
+                print("Please enter a positive whole number")
+                continue
+        except:
+            print("That is an invalid input, please enter a positive whole number")
+            continue
+    
+    #Release Date
+    while True:
+        try:
+            #Gather Release Date
+            release_date = input("Please enter the release date of the book in the format YYYY/MM/DD using numerical representation! ")
+            #Restructure Data
+            year = int(release_date[0:4])
+            year = str(year)
+            month = int(release_date[5:7])
+            day = int(release_date[8:10])
+            #Check Data
+            if release_date[4] == "/" and release_date[7] == "/" and len(release_date) == 10 and len(year) == 4 and 0 < month <= 12 and 0 < day <= 31: 
+                data.append(release_date)
+                break
+            else:
+                print("Invalid Input Syntax/Domain")
+                continue
+        except ValueError:
+            print("Invalid Input, letters in the allocated spaces for year, month, and day numbers")
+            continue
 
     final_query = f"INSERT DATA into book (id, name, author, genre, pages, word_count, release_date, isbn, review) VALUES ({target_id}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]})"
+    db.commit()
+    db.close()
 
 
 
@@ -311,18 +406,19 @@ if __name__ == "__main__":
         print('\n')
         print('1. Print all the book titles and authors')
         print('2. Print the book titles, word counts, and authors where there are more than 150,000 words')
-        print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages.')
-        print('4. Print all the book titles, authors, and genres.')
+        print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages')
+        print('4. Print all the book titles, authors, and genres')
         print('5. Print all the book titles, authors, and release dates')
         print('6. Print all the book titles, authors, my enjoyment, and the general reviews')
         print('7. Print all the book titles, isbn-13 numbers, and release dates')
         print('8. Search for all the books released in a year')
         print('9. Add data to the genre table')
         print('10. Add data to the author table')
+        print('11. Add data to the book table')
         #Gets the user input correlating to a function
         user_input = input('Input the number associated with the function you wish to execute. \n')
         #Lookup and execute the correct function based on a function dictionary
-        if user_input in function_array.keys():
+        if user_input.lower() in function_array.keys():
             function_array[user_input.lower()]()
             time.sleep(2)
         else:
