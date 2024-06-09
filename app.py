@@ -3,7 +3,7 @@ This is an application to view my SQL database, insert information, update infor
 '''
 #Importing Modules
 import sqlite3
-import time
+from time import sleep
 from datetime import date
 
 #Intializing variables
@@ -412,7 +412,38 @@ def add_data_to_book_table():
     print("\n")
     db.commit()
     db.close()
+def remove_data_from_genre_table():
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    
+    #Display Table
+    gather_query = "SELECT * FROM genre;"
+    cursor.execute(gather_query)
+    genre_table = cursor.fetchall()
+    print("| ID  | Genre          |")
+    print("------------------------")
+    for genre in genre_table:
+        print(f"| {genre[0]:<4}| {genre[1]:<15}|")
+    print("------------------------")
+    print("| ID  | Genre          |")
+    while True:
+        try:
+            id = int(input("Please enter the id of the genre you want to remove from the genre table! "))
+            if id in genre in genre_table:
+                break
+            else:
+                print("That id is not in the table, please try again!")
+                continue
+        except ValueError:
+            print("Your entry was not a number please try again.")
+            continue
 
+    query = f"DELETE FROM genre WHERE id = {id}"
+    cursor.execute(query)
+    db.commit()
+    print("Sucessfully removed from the database!")
+    db.close()
 
 
 
@@ -430,6 +461,7 @@ function_array = {
     "9": add_data_to_genre_table,
     "10": add_data_to_author_table,
     "11": add_data_to_book_table,
+    "12": remove_data_from_genre_table,
     "quit": quit,
 }
 
@@ -457,7 +489,7 @@ if __name__ == "__main__":
         #Lookup and execute the correct function based on a function dictionary
         if user_input.lower() in function_array.keys():
             function_array[user_input.lower()]()
-            time.sleep(2)
+            sleep(2)
         else:
             #Return an error message if the function is not correlated to a function
             print("Invalid input, please enter the number before a function without any trailing spaces or symbols!")
