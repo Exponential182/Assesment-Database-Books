@@ -4,6 +4,7 @@ This is an application to view my SQL database, insert information, update infor
 #Importing Modules
 import sqlite3
 import time
+from datetime import date
 
 #Intializing variables
 DATABASE = "Y11_Programming/SQLite3/Assesment-Database-Books/books.db"
@@ -227,14 +228,17 @@ def add_data_to_book_table():
     cursor = db.cursor()
     data = []
     polarity = ["Y", "N"]
+
     #Gather Id Information
-    id_query = "SELECT id FROM book"
+    id_query = "SELECT MAX(id)+1 FROM book"
     cursor.execute(id_query)
     id_deterimnant = cursor.fetchall()
-    target_id = id_deterimnant[-1][0] + 1
+    next_id = id_deterimnant[0][0]
+
     #Book Title
-    gatherer = input("Please insert the title of the book you would like to enter!\n")
-    data.append(gatherer)
+    title = input("Please insert the title of the book you would like to enter!\n")
+    data.append(title)
+
     """Subset Function to Gather Author"""
     #Establish and Show Author Table for Refrence
     query1 = "SELECT * FROM author;"
@@ -357,22 +361,55 @@ def add_data_to_book_table():
             #Gather Release Date
             release_date = input("Please enter the release date of the book in the format YYYY/MM/DD using numerical representation! ")
             #Restructure Data
-            year = int(release_date[0:4])
-            year = str(year)
-            month = int(release_date[5:7])
-            day = int(release_date[8:10])
-            #Check Data
-            if release_date[4] == "/" and release_date[7] == "/" and len(release_date) == 10 and len(year) == 4 and 0 < month <= 12 and 0 < day <= 31: 
-                data.append(release_date)
-                break
-            else:
-                print("Invalid Input Syntax/Domain")
-                continue
+            year, month, day = release_date.split('/')
+            #Date validation
+            d = date(int(year), int(month), int(day))
+            data.append(release_date)
+            break
         except ValueError:
+            #Checks for non-numerical characters in invalid places by Value Errors
             print("Invalid Input, letters in the allocated spaces for year, month, and day numbers")
             continue
+    
+    #ISBN
+    while True:
+        try:
+            #Gather Input and Generate Test String
+            isbn = int(input("Please enter the books ISBN number, this should be a 13 digit number without hyphens! "))
+            isbn_test = str(isbn)
+            #Test for valid string length
+            if len(isbn_test) != 13:
+                print("That number has too many or few digits, please try again.")
+                continue
+            else:
+                data.append(isbn)
+                break
+        except ValueError:
+            #Checks if the string is purely numerical using Value Errors
+            print("Your input was invalid, it likely contained hyphens or connecting strings, if this error is a result of copy pasting, please type it manually")
+            continue
+    
+    #Review
+    while True:
+        try:
+            #Gather Input and generate test string
+            print("To gather the data for the review I used www.goodreads.com")
+            review = float(input("Please enter the books review on a scale from 1 to 5, this should a number with one decimal place. "))
+            review_test = str(review)
+            if len(review_test) == 3 and review >= 1 and review <= 5:
+                data.append(review)
+                break
+            else:
+                print("Your input was outside the range of 1 to 5(inclusive), contained more than one decimal place or contained no decimal places. Please Try Again!")
+        except ValueError:
+            print("Your Input contained non numerical characters in such a way that the value was not recognised as a decimal.1")
+            continue
 
-    final_query = f"INSERT DATA into book (id, name, author, genre, pages, word_count, release_date, isbn, review) VALUES ({target_id}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]})"
+    final_query = f"INSERT INTO book (id, name, author, genre, pages, word_count, release_date, isbn, review) VALUES ({next_id}, '{data[0]}', {data[1]}, {data[2]}, {data[3]}, {data[4]}, '{data[5]}', {data[6]}, {data[7]})"
+    cursor.execute(final_query)
+    print("\n")
+    print("Sucessfully added the data to the database.")
+    print("\n")
     db.commit()
     db.close()
 
