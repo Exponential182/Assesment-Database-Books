@@ -416,7 +416,7 @@ def remove_data_from_genre_table():
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
-    polarity = ["Y", "N"]
+    genres = []
     
     #Display Table for Refrence
     gather_query = "SELECT * FROM genre;"
@@ -430,10 +430,13 @@ def remove_data_from_genre_table():
     print("| ID  | Genre          |")
 
     #Gather Id
+    for genre in genre_table:
+        genres.append(genre[0])
+    #Gather Id and check against list
     while True:
         try:
             id = int(input("Please enter the id of the genre you want to remove from the genre table! "))
-            if id in genre in genre_table:
+            if id in genres:
                 break
             else:
                 print("That id is not in the table, please try again!")
@@ -455,6 +458,7 @@ def remove_data_from_author_table():
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
+    authors = []
     
     #Display Table for Refrence
     gather_query = "SELECT * FROM author;"
@@ -466,11 +470,14 @@ def remove_data_from_author_table():
         print(f"| {author[0]:<4}| {author[1]:<50}|")
     print("-----------------------------------------------------------")
     print("| ID  | Author Name                                       |")
-    #Gather Id
+    #Gather Id list
+    for author in author_table:
+        authors.append(author[0])
+    #Gather Id and check against list
     while True:
         try:
             id = int(input("Please enter the id of the author you want to remove from the author table! "))
-            if id in author in author_table:
+            if id in authors:
                 break
             else:
                 print("That id is not in the table, please try again!")
@@ -489,13 +496,49 @@ def remove_data_from_author_table():
     db.commit()
     db.close()
 def remove_data_from_book_table():
-    db = sqlite3
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    books = []
+
+    #Display all the relevant information
+    query = "SELECT book.id, book.name, author.name, genre.genre FROM book JOIN author ON author.id = book.author JOIN genre on genre.id = book.genre ORDER BY book.id ASC"
+    cursor.execute(query)
+    book_table = cursor.fetchall()
+    print("| ID  | Book Title                                        | Author Name         | Genre          |")
+    print("--------------------------------------------------------------------------------------------------")
+    for book in book_table:
+        print(f"| {book[0]:<4}| {book[1]:<50}| {book[2]:<20}| {book[3]:<15}|")
+    print("--------------------------------------------------------------------------------------------------")
+    print("| ID  | Book Title                                        | Author Name         | Genre          |")
+
+    #generate list of ids
+    for book in book_table:
+        books.append(book[0])
+    #Gather target id and check for validity
+    while True:
+        try:
+            id = int(input("Using the table above, enter the id of the row you want to remove from the database! "))
+            if id in books:
+                break
+            else:
+                print("That id is not in the database, Please try again.")
+        except ValueError:
+            print("The id you tried to enter is not a numeral, please try again.")
+
+    #Remove data from desired id
+    query2 = f"DELETE FROM book WHERE id = {id}"
+    cursor.execute(query2)
+    db.commit()
+    db.close()
 def remove_data():
+    #Array of Data removal functions
     func_array = {
         "1": remove_data_from_author_table,
         "2": remove_data_from_book_table,
         "3": remove_data_from_genre_table,
     }
+    #Checks if the user has admin permissions with a password
     while True:
         username = input("Username: ")
         password = input("Password: ")
@@ -504,7 +547,9 @@ def remove_data():
         else:
             print("Wrong Username/Password")
             continue
+    #List of tables
     print("1. Author \n2. Book \n3. Genre")
+    #Gathers the table and redirects to the correct function
     while True:
         location = input("Enter the id of table you want to remove data from using the above list. ")
         if location in func_array.keys():
