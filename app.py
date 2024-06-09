@@ -416,8 +416,9 @@ def remove_data_from_genre_table():
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
+    polarity = ["Y", "N"]
     
-    #Display Table
+    #Display Table for Refrence
     gather_query = "SELECT * FROM genre;"
     cursor.execute(gather_query)
     genre_table = cursor.fetchall()
@@ -427,6 +428,8 @@ def remove_data_from_genre_table():
         print(f"| {genre[0]:<4}| {genre[1]:<15}|")
     print("------------------------")
     print("| ID  | Genre          |")
+
+    #Gather Id
     while True:
         try:
             id = int(input("Please enter the id of the genre you want to remove from the genre table! "))
@@ -438,14 +441,78 @@ def remove_data_from_genre_table():
         except ValueError:
             print("Your entry was not a number please try again.")
             continue
-
+    
+    #Execute Genre Removal Query and coresponding books to remove errors
     query = f"DELETE FROM genre WHERE id = {id}"
     cursor.execute(query)
-    db.commit()
+    query2 = f"DELETE FROM book WHERE genre = {id}"
+    cursor.execute(query2)
     print("Sucessfully removed from the database!")
+
+    db.commit()
     db.close()
+def remove_data_from_author_table():
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    
+    #Display Table for Refrence
+    gather_query = "SELECT * FROM author;"
+    cursor.execute(gather_query)
+    author_table = cursor.fetchall()
+    print("| ID  | Author Name                                       |")
+    print("-----------------------------------------------------------")
+    for author in author_table:
+        print(f"| {author[0]:<4}| {author[1]:<50}|")
+    print("-----------------------------------------------------------")
+    print("| ID  | Author Name                                       |")
+    #Gather Id
+    while True:
+        try:
+            id = int(input("Please enter the id of the author you want to remove from the author table! "))
+            if id in author in author_table:
+                break
+            else:
+                print("That id is not in the table, please try again!")
+                continue
+        except ValueError:
+            print("Your entry was not a number please try again.")
+            continue
+    
+    #Execute Author Removal Query and remocing coresponding books to prevent errors
+    query = f"DELETE FROM author WHERE id = {id}"
+    cursor.execute(query)
+    query2 = f"DELETE FROM book WHERE author = {id}"
+    cursor.execute(query2)
+    print("Sucessfully removed from the database!")
 
-
+    db.commit()
+    db.close()
+def remove_data_from_book_table():
+    db = sqlite3
+def remove_data():
+    func_array = {
+        "1": remove_data_from_author_table,
+        "2": remove_data_from_book_table,
+        "3": remove_data_from_genre_table,
+    }
+    while True:
+        username = input("Username: ")
+        password = input("Password: ")
+        if username == "username" and password == "password":
+            break
+        else:
+            print("Wrong Username/Password")
+            continue
+    print("1. Author \n2. Book \n3. Genre")
+    while True:
+        location = input("Enter the id of table you want to remove data from using the above list. ")
+        if location in func_array.keys():
+            func_array[location]()
+            break
+        else:
+            print("Invalid Input, Please try again!")
+            continue
 
 
 #Establish Array of Functions
@@ -461,7 +528,7 @@ function_array = {
     "9": add_data_to_genre_table,
     "10": add_data_to_author_table,
     "11": add_data_to_book_table,
-    "12": remove_data_from_genre_table,
+    "12": remove_data,
     "quit": quit,
 }
 
@@ -484,6 +551,7 @@ if __name__ == "__main__":
         print('9. Add data to the genre table')
         print('10. Add data to the author table')
         print('11. Add data to the book table')
+        print('12. Remove data from a table')
         #Gets the user input correlating to a function
         user_input = input('Input the number associated with the function you wish to execute. \n')
         #Lookup and execute the correct function based on a function dictionary
