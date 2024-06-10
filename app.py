@@ -413,6 +413,7 @@ def add_data_to_book_table():
     db.commit()
     db.close()
 def remove_data_from_genre_table():
+    """Function to Remove Data from the Genre Table"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -455,6 +456,7 @@ def remove_data_from_genre_table():
     db.commit()
     db.close()
 def remove_data_from_author_table():
+    """Function to Remove Data from the Author Table"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -496,6 +498,7 @@ def remove_data_from_author_table():
     db.commit()
     db.close()
 def remove_data_from_book_table():
+    """Function to Remove Data from the Book Table"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -532,6 +535,7 @@ def remove_data_from_book_table():
     db.commit()
     db.close()
 def remove_data():
+    """Function to Authorise and Redirect to Data Removal Functions"""
     #Array of Data removal functions
     func_array = {
         "1": remove_data_from_author_table,
