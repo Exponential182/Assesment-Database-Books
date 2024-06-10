@@ -10,7 +10,7 @@ from datetime import date
 DATABASE = "Y11_Programming/SQLite3/Assesment-Database-Books/books.db"
 user_input = None
 
-#List of Existing Functions
+#Defining Functions
 def book_names_and_authors():
     '''Function to display all the books and their authors'''
     #Establish Interface
