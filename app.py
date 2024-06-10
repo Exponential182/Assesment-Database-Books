@@ -107,18 +107,18 @@ def book_names_and_author_and_my_enjoyment_and_general_reviews():
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
     #Execute and Fetch Data
-    query = "SELECT book.name, author.name, book.enjoyment, book.review FROM book JOIN author ON author.id = book.author ORDER BY book.name ASC"
+    query = "SELECT book.name, author.name, book.review FROM book JOIN author ON author.id = book.author ORDER BY book.name ASC"
     cursor.execute(query)
     results = cursor.fetchall()
     #Print out the Results
     print("Note: Enjoyment and Reviews are on a scale from 1 to 5.")
-    print("| Book Title                                        | Author Name         | Enjoyment | Reviews |")
-    print("-------------------------------------------------------------------------------------------------")
+    print("| Book Title                                        | Author Name         | Reviews |")
+    print("-------------------------------------------------------------------------------------")
     for data in results:
-        print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<10}| {data[3]:<8}|")
-    print("-------------------------------------------------------------------------------------------------")
-    print("| Book Title                                        | Author Name         | Enjoyment | Reviews |")
-    print("-------------------------------------------------------------------------------------------------")
+        print(f"| {data[0]:<50}| {data[1]:<20}| {data[3]:<8}|")
+    print("-------------------------------------------------------------------------------------")
+    print("| Book Title                                        | Author Name         | Reviews |")
+    print("-------------------------------------------------------------------------------------")
     db.close()
 def book_names_and_isbn_13_classification_and_release_date():
     '''Function to display all the books, their isbn-13 classification, and their release date'''
