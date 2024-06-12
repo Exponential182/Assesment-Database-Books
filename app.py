@@ -5,9 +5,17 @@ This is an application to view my SQL database, insert information, update infor
 import sqlite3
 from time import sleep
 from datetime import date
+import glob
 
+#Code to locate correct file name for Database
+files = glob.glob('*.db')
+print(files)
+for i in files:
+    if "books" not in i:
+        files.remove(i)
 #Intializing variables
-DATABASE = "Y11_Programming/SQLite3/Assesment-Database-Books/books.db"
+DATABASE = files[0]
+#If the code does not work, It is likely an error with the database location, please ensure the database in the same directory as the this file!
 user_input = None
 
 #Defining Functions
@@ -101,8 +109,8 @@ def book_names_and_authors_and_release_date():
     print("| Book Title                                        | Author Name         | Release Date   |")
     print("--------------------------------------------------------------------------------------------")
     db.close()
-def book_names_and_author_and_my_enjoyment_and_general_reviews():
-    '''Function to display all the books, their authors, my enjoyment, and their general review average'''
+def book_names_and_author_and_general_reviews():
+    '''Function to display all the books, their authors, and their general review average'''
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -111,7 +119,7 @@ def book_names_and_author_and_my_enjoyment_and_general_reviews():
     cursor.execute(query)
     results = cursor.fetchall()
     #Print out the Results
-    print("Note: Enjoyment and Reviews are on a scale from 1 to 5.")
+    print("Note: Reviews are on a scale from 1 to 5.")
     print("| Book Title                                        | Author Name         | Reviews |")
     print("-------------------------------------------------------------------------------------")
     for data in results:
@@ -130,7 +138,6 @@ def book_names_and_isbn_13_classification_and_release_date():
     cursor.execute(query)
     results = cursor.fetchall()
     #Print out the Results
-    print("Note: Enjoyment and Reviews are on a scale from 1 to 5.")
     print("| Book Title                                        | ISBN          | Release Date |")
     print("------------------------------------------------------------------------------------")
     for data in results:
@@ -532,6 +539,7 @@ def remove_data_from_book_table():
     #Remove data from desired id
     query2 = f"DELETE FROM book WHERE id = {id}"
     cursor.execute(query2)
+    print("Sucessfully removed from the database!")
     db.commit()
     db.close()
 def remove_data():
@@ -571,7 +579,7 @@ function_array = {
     "3": book_names_and_page_count_and_author_and_genre_pages_less_than_333,
     "4": book_names_and_authors_and_genres,
     "5": book_names_and_authors_and_release_date,
-    "6": book_names_and_author_and_my_enjoyment_and_general_reviews,
+    "6": book_names_and_author_and_general_reviews,
     "7": book_names_and_isbn_13_classification_and_release_date,
     "8": search_for_books_released_in_a_year,
     "9": add_data_to_genre_table,
