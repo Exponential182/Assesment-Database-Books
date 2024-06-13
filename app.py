@@ -62,23 +62,52 @@ def search_for_books_by_an_author():
             #Returns an error message if the user input was not an integer
             print("Your input was not an integer, please try again")
             continue
-def book_names_and_author_and_wordcount_greater_than_150000():
-    '''Function to display all the books, their word counts and their authors when the word count exceeds 150000'''
+def search_by_wordcount_return_title_author_genre_wordcount():
+    """Function to display the book, author, genre, and wordcount of books with more or less words than a user input"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
-    #Execute and Fetch Data
-    query = "SELECT book.name, book.word_count, author.name FROM book JOIN author on author.id = book.author WHERE word_count > 150000 ORDER BY book.word_count DESC"
+    more_or_less = ['>=', '<=']
+    #More or Less and integer Gatherer
+    while True:
+        more_less = input("Would you like to search for books with more or less words than a given word count? (more/less) ").lower()
+        #SQL Statement converter
+        if more_less == "more" or more_less == "less":
+            if more_less == "more":
+                more_less = more_or_less[0]
+            if more_less == "less":
+                more_less = more_or_less[1]
+            break
+        else:
+            #Error Message
+            print("Your input was not the word more or the word less. This is not casesensitive. Please try again!")
+
+    #Integer Generator
+    while True:
+        try:
+            word_count = int(input("Please enter the word count you would like to filter by! "))
+            if word_count <= 0:
+                print("You input was negative, you can't have a negative number of pages, or zero for that matter.")
+                continue
+            else:
+                break
+        except ValueError:
+            print("It appears that your page count was not an integer, please try again!")
+    
+    #Query formatting, execution, and result printing
+    query = f"SELECT book.name, author.name, genre.genre, book.word_count FROM book JOIN author on author.id = book.author JOIN genre on genre.id = book.genre WHERE book.word_count {more_less} {word_count} ORDER BY book.word_count DESC"
     cursor.execute(query)
     results = cursor.fetchall()
-    #Print out the Results
-    print("| Book Title                                        | Word Count  | Author Name         |")
-    print("-----------------------------------------------------------------------------------------")
-    for data in results:
-        print(f"| {data[0]:<50}| {data[1]:<12}| {data[2]:<20}|")
-    print("-----------------------------------------------------------------------------------------")
-    print("| Book Title                                        | Word Count  | Author Name         |")
-    print("-----------------------------------------------------------------------------------------")
+    if len(results) == 0:
+        print("It appears there was no data!")
+    else:
+        print("| Book Title                                        | Author Name         | Genre       | Word Count  |")
+        print("-------------------------------------------------------------------------------------------------------")
+        for data in results:
+            print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<12}| {data[3]:<12}|")
+        print("-------------------------------------------------------------------------------------------------------")
+        print("| Book Title                                        | Author Name         | Genre       | Word Count  |")
+        print("-------------------------------------------------------------------------------------------------------")
     db.close()
 def book_names_and_page_count_and_author_and_genre_pages_less_than_333():
     '''Function to display all the books, their page counts, author, and genre, where there are less than 333 pages'''
@@ -609,7 +638,7 @@ def remove_data():
 #Establish Array of Functions
 function_array = {
     "1": search_for_books_by_an_author,
-    "2": book_names_and_author_and_wordcount_greater_than_150000,
+    "2": search_by_wordcount_return_title_author_genre_wordcount,
     "3": book_names_and_page_count_and_author_and_genre_pages_less_than_333,
     "4": book_names_and_authors_and_genres,
     "5": book_names_and_authors_and_release_date,
@@ -629,10 +658,10 @@ function_array = {
 if __name__ == "__main__":
     while True:
         #Code to give the user a series of function options, these include prewritten querries, searches (WIP), and adding/removing data
-        print("="*144)
-        print('Use the string quit without providing an input to close the program')
+        print("="*170)
+        print('Enter the word quit to close the application!')
         print('1. Search for all the books written by an author')
-        print('2. Print the book titles, word counts, and authors where there are more than 150,000 words')
+        print('2. Return the title, author, genre, and word count of books with a larger or smaller word count than an user input')
         print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages')
         print('4. Print all the book titles, authors, and genres')
         print('5. Print all the book titles, authors, and release dates')
