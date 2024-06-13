@@ -8,35 +8,59 @@ from datetime import date
 import glob
 
 #Code to locate correct file name for Database
-files = glob.glob('*.db')
-print(files)
-for i in files:
-    if "books" not in i:
-        files.remove(i)
+files = glob.glob('books.db')
 #Intializing variables
 DATABASE = files[0]
 #If the code does not work, It is likely an error with the database location, please ensure the database in the same directory as the this file!
 user_input = None
 
 #Defining Functions
-def book_names_and_authors():
-    '''Function to display all the books and their authors'''
+def search_for_books_by_an_author():
+    """Function to filter the database by an author provided by the user based on the author table"""
+    valid_ids = []
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
-    #Execute and Fetch Data
-    query = "SELECT book.name, author.name FROM book JOIN author ON author.id = book.author ORDER BY book.name ASC"
-    cursor.execute(query)
-    results = cursor.fetchall()
-    #Print out the Results
-    print("| Book Title                                        | Author Name         |")
-    print("---------------------------------------------------------------------------")
-    for data in results:
-        print(f"| {data[0]:<50}| {data[1]:<20}|")
-    print("---------------------------------------------------------------------------")
-    print("| Book Title                                        | Author Name         |")
-    print("---------------------------------------------------------------------------")
-    db.close()
+    #Show All Author Information
+    query1 = "SELECT * FROM author;"
+    cursor.execute(query1)
+    author_table = cursor.fetchall()
+    print("| ID  | Author Name                                       |")
+    print("-----------------------------------------------------------")
+    for author in author_table:
+        print(f"| {author[0]:<4}| {author[1]:<50}|")
+    print("-----------------------------------------------------------")
+    print("| ID  | Author Name                                       |")
+    #Generates a list of valid ids from the database
+    for i in author_table:
+        valid_ids.append(i[0])
+
+    #Loop to gather the user input, the id of the author
+    while True:
+        try:
+            id = int(input("Please enter the id of the author who's books you want to view! "))
+            if id in valid_ids:
+                query2 = f"SELECT book.name, author.name FROM book JOIN author ON author.id = book.author WHERE author.id = {id} ORDER BY book.name ASC"
+                cursor.execute(query2)
+                results = cursor.fetchall()
+                #Print out the Results
+                print("| Book Title                                        | Author Name         |")
+                print("---------------------------------------------------------------------------")
+                for data in results:
+                    print(f"| {data[0]:<50}| {data[1]:<20}|")
+                print("---------------------------------------------------------------------------")
+                print("| Book Title                                        | Author Name         |")
+                print("---------------------------------------------------------------------------")
+                db.close()
+                break
+            else:
+                #Returns an error message if the id does not exist in the database
+                print("That id is not in the database, please try again")
+                continue
+        except ValueError:
+            #Returns an error message if the user input was not an integer
+            print("Your input was not an integer, please try again")
+            continue
 def book_names_and_author_and_wordcount_greater_than_150000():
     '''Function to display all the books, their word counts and their authors when the word count exceeds 150000'''
     #Establish Interface
@@ -149,33 +173,36 @@ def book_names_and_isbn_13_classification_and_release_date():
 def search_for_books_released_in_a_year():
     '''Function to display book titles, authors, and release dates based on a used input of a year'''
     search_query = None
-    while search_query == None:
+    while True:
         try:
             search_query = int(input("Enter which year's book releases you would like to view! (Positive Numbers Only Please!) "))
             if search_query <= 0:
                 search_query = 0
                 print("Please enter a positive whole number")
+                search_for_books_released_in_a_year()
+                continue
         except ValueError:
             print("Please enter a series of positive whole numbers")
-    #Establish Interface
-    db = sqlite3.connect(DATABASE)
-    cursor = db.cursor()
-    #Execute and Fetch Data, Sorting by the year provided
-    query = f"SELECT book.name, author.name, book.release_date FROM book JOIN author ON author.id = book.author WHERE release_date LIKE '{search_query}/%'"
-    cursor.execute(query)
-    results = cursor.fetchall()
-    #Print out the Results
-    if len(results) != 0:
-        print("| Book Title                                        | Author              | Release Date |")
-        print("------------------------------------------------------------------------------------------")
-        for data in results:
-            print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<13}|")
-        print("------------------------------------------------------------------------------------------")
-        print("| Book Title                                        | Author              | Release Date |")
-        print("------------------------------------------------------------------------------------------")
-    else:
-        print("It appears there was no data for that year!")
-    db.close()
+        #Establish Interface
+        db = sqlite3.connect(DATABASE)
+        cursor = db.cursor()
+        #Execute and Fetch Data, Sorting by the year provided
+        query = f"SELECT book.name, author.name, book.release_date FROM book JOIN author ON author.id = book.author WHERE release_date LIKE '{search_query}/%'"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        #Print out the Results
+        if len(results) != 0:
+            print("| Book Title                                        | Author              | Release Date |")
+            print("------------------------------------------------------------------------------------------")
+            for data in results:
+                print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<13}|")
+            print("------------------------------------------------------------------------------------------")
+            print("| Book Title                                        | Author              | Release Date |")
+            print("------------------------------------------------------------------------------------------")
+        else:
+            print("It appears there was no data for that year!")
+        db.close()
+        break
 def add_data_to_genre_table():
     """Function to Insert a Genre Into the Genre Table"""
     #Establish Interface
@@ -574,7 +601,7 @@ def remove_data():
 
 #Establish Array of Functions
 function_array = {
-    "1": book_names_and_authors,
+    "1": search_for_books_by_an_author,
     "2": book_names_and_author_and_wordcount_greater_than_150000,
     "3": book_names_and_page_count_and_author_and_genre_pages_less_than_333,
     "4": book_names_and_authors_and_genres,
@@ -595,9 +622,9 @@ function_array = {
 if __name__ == "__main__":
     while True:
         #Code to give the user a series of function options, these include prewritten querries, searches (WIP), and adding/removing data
+        print("="*144)
         print('Use the string quit without providing an input to close the program')
-        print('\n')
-        print('1. Print all the book titles and authors')
+        print('1. Search for all the books written by an author')
         print('2. Print the book titles, word counts, and authors where there are more than 150,000 words')
         print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages')
         print('4. Print all the book titles, authors, and genres')
