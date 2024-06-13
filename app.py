@@ -11,6 +11,7 @@ import glob
 files = glob.glob('books.db')
 #Intializing variables
 DATABASE = files[0]
+admin = False
 #If the code does not work, It is likely an error with the database location, please ensure the database in the same directory as the this file!
 user_input = None
 
@@ -579,9 +580,15 @@ def remove_data():
     }
     #Checks if the user has admin permissions with a password
     while True:
+        if admin == True:
+            print("Access Granted!")
+            break
+        print("For development and testing purposes, the username is username and the password is password, all in lowercase.")
         username = input("Username: ")
         password = input("Password: ")
         if username == "username" and password == "password":
+            print("Access Granted!")
+            admin = True
             break
         else:
             print("Wrong Username/Password")
