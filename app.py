@@ -63,7 +63,7 @@ def search_for_books_by_an_author():
             print("Your input was not an integer, please try again")
             continue
 def search_by_wordcount_return_title_author_genre_wordcount():
-    """Function to display the book, author, genre, and wordcount of books with more or less words than a user input"""
+    """Function to display the book, author, genre, and word count of books with more or less words than a user input"""
     #Establish Interface
     db = sqlite3.connect(DATABASE)
     cursor = db.cursor()
@@ -82,17 +82,17 @@ def search_by_wordcount_return_title_author_genre_wordcount():
             #Error Message
             print("Your input was not the word more or the word less. This is not casesensitive. Please try again!")
 
-    #Integer Generator
+    #Word Count Generator
     while True:
         try:
             word_count = int(input("Please enter the word count you would like to filter by! "))
             if word_count <= 0:
-                print("You input was negative, you can't have a negative number of pages, or zero for that matter.")
+                print("You input was negative, you can't have a negative number of words, or zero for that matter.")
                 continue
             else:
                 break
         except ValueError:
-            print("It appears that your page count was not an integer, please try again!")
+            print("It appears that your word count was not an integer, please try again!")
     
     #Query formatting, execution, and result printing
     query = f"SELECT book.name, author.name, genre.genre, book.word_count FROM book JOIN author on author.id = book.author JOIN genre on genre.id = book.genre WHERE book.word_count {more_less} {word_count} ORDER BY book.word_count DESC"
@@ -107,6 +107,53 @@ def search_by_wordcount_return_title_author_genre_wordcount():
             print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<12}| {data[3]:<12}|")
         print("-------------------------------------------------------------------------------------------------------")
         print("| Book Title                                        | Author Name         | Genre       | Word Count  |")
+        print("-------------------------------------------------------------------------------------------------------")
+    db.close()
+def search_by_pagecount():
+    """Function to display the book, author, genre, and page count of books with more or less pages than a user input"""
+    #Establish Interface
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    more_or_less = ['>=', '<=']
+    #More or Less and integer Gatherer
+    while True:
+        more_less = input("Would you like to search for books with more or less pages than a given page count? (more/less) ").lower()
+        #SQL Statement converter
+        if more_less == "more" or more_less == "less":
+            if more_less == "more":
+                more_less = more_or_less[0]
+            if more_less == "less":
+                more_less = more_or_less[1]
+            break
+        else:
+            #Error Message
+            print("Your input was not the word more or the word less. This is not casesensitive. Please try again!")
+
+    #Page Count Generator
+    while True:
+        try:
+            pages = int(input("Please enter the page count you would like to filter by! "))
+            if pages <= 0:
+                print("You input was negative, you can't have a negative number of pages, or zero for that matter.")
+                continue
+            else:
+                break
+        except ValueError:
+            print("It appears that your page count was not an integer, please try again!")
+    
+    #Query formatting, execution, and result printing
+    query = f"SELECT book.name, author.name, genre.genre, book.pages FROM book JOIN author on author.id = book.author JOIN genre on genre.id = book.genre WHERE book.pages {more_less} {pages} ORDER BY book.word_count DESC"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    if len(results) == 0:
+        print("It appears there was no data!")
+    else:
+        print("| Book Title                                        | Author Name         | Genre       | Page Count  |")
+        print("-------------------------------------------------------------------------------------------------------")
+        for data in results:
+            print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<12}| {data[3]:<12}|")
+        print("-------------------------------------------------------------------------------------------------------")
+        print("| Book Title                                        | Author Name         | Genre       | Page Count  |")
         print("-------------------------------------------------------------------------------------------------------")
     db.close()
 def book_names_and_page_count_and_author_and_genre_pages_less_than_333():
@@ -640,7 +687,7 @@ def remove_data():
 function_array = {
     "1": search_for_books_by_an_author,
     "2": search_by_wordcount_return_title_author_genre_wordcount,
-    "3": book_names_and_page_count_and_author_and_genre_pages_less_than_333,
+    "3": search_by_pagecount,
     "4": book_names_and_authors_and_genres,
     "5": book_names_and_authors_and_release_date,
     "6": book_names_and_author_and_general_reviews,
@@ -659,11 +706,11 @@ function_array = {
 if __name__ == "__main__":
     while True:
         #Code to give the user a series of function options, these include prewritten querries, searches (WIP), and adding/removing data
-        print("="*170)
+        print("="*150)
         print('Enter the word quit to close the application!')
         print('1. Search for all the books written by an author')
         print('2. Return the title, author, genre, and word count of books with a larger or smaller word count than an user input')
-        print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages')
+        print('3. Return the title, author, genre, and page count of books with a larger or smaller page count than an user input')
         print('4. Print all the book titles, authors, and genres')
         print('5. Print all the book titles, authors, and release dates')
         print('6. Print all the book titles, authors, and the general reviews')
