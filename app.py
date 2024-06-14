@@ -177,7 +177,7 @@ def book_names_and_author_and_general_reviews():
     print("| Book Title                                        | Author Name         | Reviews |")
     print("-------------------------------------------------------------------------------------")
     for data in results:
-        print(f"| {data[0]:<50}| {data[1]:<20}| {data[3]:<8}|")
+        print(f"| {data[0]:<50}| {data[1]:<20}| {data[2]:<8}|")
     print("-------------------------------------------------------------------------------------")
     print("| Book Title                                        | Author Name         | Reviews |")
     print("-------------------------------------------------------------------------------------")
@@ -607,6 +607,7 @@ def remove_data():
         "2": remove_data_from_book_table,
         "3": remove_data_from_genre_table,
     }
+    global admin
     #Checks if the user has admin permissions with a password
     while True:
         if admin == True:
@@ -665,7 +666,7 @@ if __name__ == "__main__":
         print('3. Print the book titles, page counts, authors, and genre of books with less than 333 pages')
         print('4. Print all the book titles, authors, and genres')
         print('5. Print all the book titles, authors, and release dates')
-        print('6. Print all the book titles, authors, my enjoyment, and the general reviews')
+        print('6. Print all the book titles, authors, and the general reviews')
         print('7. Print all the book titles, isbn-13 numbers, and release dates')
         print('8. Search for all the books released in a year')
         print('9. Add data to the genre table')

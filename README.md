@@ -1,2 +1,3 @@
 A Database of books and a simple python app to interact with it!
 If the database does not correctly connect, please ensure that the application and database are within the same directory!
+It is also important that the database is name 'books.db' (not in apostrophes) so that the code will find the database, this is to ensure the correct database joins onto the program, preventing errors from trying to call non-existant functions.
